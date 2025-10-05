@@ -4,6 +4,15 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
+// ✅ הגדרה לתמיכה בתמונות גדולות (עד 10MB)
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '10mb',
+    },
+  },
+};
+
 // המרה מ-data URL ל-format שGemini מבין
 function dataUrlToGeminiFormat(dataUrl: string) {
   const base64Data = dataUrl.split(",")[1];
