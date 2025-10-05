@@ -1,12 +1,26 @@
-import type { NextConfig } from 'next';
+import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  experimental: {
-    serverComponentsExternalPackages: ['tesseract.js', 'tesseract.js-core'],
+  eslint: {
+    // מתעלם משגיאות ESLint בזמן build
+    ignoreDuringBuilds: true,
   },
-  api: { bodyParser: { sizeLimit: '10mb' } },
-  eslint: { ignoreDuringBuilds: true },   // לא לחסום build בגלל ESLint
-  typescript: { ignoreBuildErrors: true } // ← הוסיף עכשיו: לא להפיל build על שגיאות TS
+  typescript: {
+    // מתעלם משגיאות TypeScript בזמן build
+    ignoreBuildErrors: true,
+  },
+  webpack: (config, { isServer }) => {
+    // טיפול ב-tesseract.js ו-canvas
+    if (isServer) {
+      config.externals = [
+        ...(config.externals || []),
+        'tesseract.js',
+        'tesseract.js-core',
+        'canvas',
+      ];
+    }
+    return config;
+  },
 };
 
 export default nextConfig;
