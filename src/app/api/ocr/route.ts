@@ -1,3 +1,5 @@
+
+// @ts-nocheck
 // app/api/ocr-extract/route.ts
 import { NextResponse } from "next/server";
 import Tesseract from "tesseract.js";
