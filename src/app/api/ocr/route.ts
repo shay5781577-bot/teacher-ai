@@ -57,12 +57,18 @@ const input = Buffer.isBuffer(bytes) ? bytes : Buffer.from(bytes);
 // טיפוסי TS של tesseract לא מקבלים Buffer, אבל בפועל זה נתמך.
 // לכן אנחנו משקיטים את השגיאה של TS בלבד.
  // @ts-expect-error tesseract accepts Buffer at runtime
-const { data } = await Tesseract.recognize(input as any, "heb+eng", {
-  workerPath: CDN_WORKER,
-  corePath:   CDN_CORE,
-  langPath:   CDN_LANGS,
-  logger:     () => {},
-});
+// @ts-ignore - suppress TS type checking for Tesseract input
+const { data } = await (Tesseract as any).recognize(
+  Buffer.from(bytes),
+  "heb+eng",
+  {
+    workerPath: CDN_WORKER,
+    corePath: CDN_CORE,
+    langPath: CDN_LANGS,
+    logger: () => {},
+  }
+);
+
 
 
     const text = (data?.text || "")
