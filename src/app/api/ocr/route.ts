@@ -49,12 +49,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: "no image data" }, { status: 400 });
     }
 
-    const { data } = await Tesseract.recognize(bytes, "heb+eng", {
-      workerPath: CDN_WORKER,
-      corePath:   CDN_CORE,
-      langPath:   CDN_LANGS,
-      logger:     () => {},
-    } as any);
+// ממירים Uint8Array ל-Buffer כדי להתאים להרצה ב-Node
+const input = Buffer.isBuffer(bytes) ? bytes : Buffer.from(bytes);
+
+// טיפוסי TS של tesseract לא מקבלים Buffer, אבל בפועל זה נתמך.
+// לכן אנחנו משקיטים את השגיאה של TS בלבד.
+ // @ts-expect-error tesseract accepts Buffer at runtime
+const { data } = await Tesseract.recognize(input as any, "heb+eng", {
+  workerPath: CDN_WORKER,
+  corePath:   CDN_CORE,
+  langPath:   CDN_LANGS,
+  logger:     () => {},
+});
+
 
     const text = (data?.text || "")
       .replace(/\r/g, "")
